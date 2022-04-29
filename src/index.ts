@@ -1,4 +1,5 @@
 export class TryError extends Error {}
+export class CheckpointError extends Error {}
 
 export interface checkpointOptions {
   retries?: number;
@@ -41,13 +42,10 @@ export async function checkpoint(
     }
   }
 
-  throw new Error(`Checkpoint failed after ${retries} retries`);
+  throw new CheckpointError(`Checkpoint failed after ${retries} retries`);
 }
 
-function isRetryableError(
-  error: any,
-  checkpointName: string | null
-): boolean {
+function isRetryableError(error: any, checkpointName: string | null): boolean {
   return (
     error instanceof TryError &&
     (error.message === checkpointName || error.message === '')
