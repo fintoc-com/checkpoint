@@ -45,7 +45,7 @@ export async function checkpoint(
 }
 
 function isRetryableError(
-  error: Error,
+  error: any,
   checkpointName: string | null
 ): boolean {
   return (
