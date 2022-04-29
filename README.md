@@ -1,6 +1,6 @@
 <h1 align="center">Checkpoint</h1>
 
-> Tired of always failing in life? Well, I cannot help with that. But I can help you fail less in a node application.
+> Tired of always failing in life? Well, we cannot help with that. But we can help you fail less in a node application.
 
 [![npm package][npm-img]][npm-url]
 [![Downloads][downloads-img]][downloads-url]
@@ -8,18 +8,18 @@
 
 
 
-`checkpoint` is the ultimate flaky code helper. With modern days applications, where we must integrate with external services, which can fail, we have to figure out a way of retrying our code. We must go back to somewhere we know we where fine. We must return to a `checkpoint`.
+`checkpoint` is the ultimate flaky code helper. With modern days applications, where we must integrate with external services, which can fail. We have to figure out a way of retrying our code. We must go back to somewhere we know we where fine. We must return to a `checkpoint`.
 
 ## Install
 
 ```bash
-npm install @tvergara/checkpoint
+npm install @fintoc/checkpoint
 ```
 
 ## Usage
 
 ```ts
-import { checkpoint, retry } from '@tvergara/checkpoint';
+import { checkpoint, retry } from '@fintoc/checkpoint';
 
 // we define how many retries we can make
 await checkpoint({ retries: 3 }, () => {
@@ -87,9 +87,9 @@ The checkpoint options are as followed:
   }
 }
 ```
-[downloads-img]:https://img.shields.io/npm/dt/@tvergara/checkpoint
-[downloads-url]:https://www.npmtrends.com/@tvergara/checkpoint
-[npm-img]:https://img.shields.io/npm/v/@tvergara/checkpoint
-[npm-url]:https://www.npmjs.com/package/@tvergara/checkpoint
+[downloads-img]:https://img.shields.io/npm/dt/@fintoc/checkpoint
+[downloads-url]:https://www.npmtrends.com/@fintoc/checkpoint
+[npm-img]:https://img.shields.io/npm/v/@fintoc/checkpoint
+[npm-url]:https://www.npmjs.com/package/@fintoc/checkpoint
 [codecov-img]:https://codecov.io/gh/ryansonshine/typescript-npm-package-template/branch/main/graph/badge.svg
 [codecov-url]:https://codecov.io/gh/ryansonshine/typescript-npm-package-template

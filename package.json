@@ -1,6 +1,6 @@
 {
-  "name": "@tvergara/checkpoint",
-  "version": "0.0.6",
+  "name": "@fintoc/checkpoint",
+  "version": "0.0.1",
   "main": "./lib/src/index.js",
   "files": [
     "lib/**/*"
@@ -18,9 +18,9 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Tomás Vergara",
-    "email": "tomevergara@uc.cl",
-    "url": "https://github.com/Tvergara"
+    "name": "Fintoc",
+    "email": "team@fintoc.com",
+    "url": "https://github.com/fintoc-com"
   },
   "engines": {
     "node": ">=12.0"
