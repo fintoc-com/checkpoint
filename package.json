@@ -34,7 +34,6 @@
     "husky",
     "codecov"
   ],
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.11",
