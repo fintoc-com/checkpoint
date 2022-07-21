@@ -6,6 +6,7 @@ export interface checkpointOptions {
   logger?: (arg0: string) => void;
   name?: string;
   onRetry?: () => void | Promise<void>;
+  onFailure?: () => void | Promise<void>;
 }
 
 export function retry(checkpointName?: string): void {
@@ -22,6 +23,9 @@ export async function checkpoint(
     name = null,
     onRetry = () => {
       return;
+    },
+    onFailure = () => {
+      throw new CheckpointError(`Checkpoint failed after ${retries} retries`);
     },
   } = options;
 
@@ -42,7 +46,7 @@ export async function checkpoint(
     }
   }
 
-  throw new CheckpointError(`Checkpoint failed after ${retries} retries`);
+  await onFailure();
 }
 
 function isRetryableError(error: any, checkpointName: string | null): boolean {

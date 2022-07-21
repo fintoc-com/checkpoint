@@ -1,15 +1,46 @@
-import { checkpoint, retry, TryError } from '../src';
+import { checkpoint, CheckpointError, retry, TryError } from '../src';
 
 describe('index', () => {
   describe('checkpoint', () => {
     describe('when called with a function which always fails', () => {
-      it('should end up raising an error', async () => {
-        const result = await checkpoint({}, () => {
-          retry();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        }).catch(error => error);
+      describe('when no onFailure callback is provided', () => {
+        it('should end up raising an error', async () => {
+          const result = await checkpoint({}, () => {
+            retry();
+          }).catch(error => error);
 
-        expect(result instanceof Error).toBe(true);
+          expect(result instanceof CheckpointError).toBe(true);
+          expect(result.message).toBe('Checkpoint failed after 1 retries');
+        });
+      });
+
+      describe('when an onFailure callback is provided', () => {
+        it('should call the onFailure callback', async () => {
+          const onFailure = jest.fn();
+          await checkpoint({ onFailure }, () => {
+            retry();
+          });
+
+          expect(onFailure).toHaveBeenCalled();
+        });
+      });
+
+      describe('when onFailure callback raises an error', () => {
+        it('should end up raising the error', async () => {
+          const result = await checkpoint(
+            {
+              onFailure: () => {
+                throw new Error('onFailure callback raised an error');
+              },
+            },
+            () => {
+              retry();
+            }
+          ).catch(error => error);
+
+          expect(result instanceof Error).toBe(true);
+          expect(result.message).toBe('onFailure callback raised an error');
+        });
       });
     });
 
@@ -17,7 +48,6 @@ describe('index', () => {
       it('should end up returning the result', async () => {
         const result = await checkpoint({}, () => {
           'it succeeds';
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         }).catch(error => error);
 
         expect(result instanceof Error).toBe(false);
@@ -34,7 +64,6 @@ describe('index', () => {
 
           i += 1;
           retry();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         }).catch(error => error);
 
         expect(result instanceof Error).toBe(false);
@@ -57,11 +86,9 @@ describe('index', () => {
       it('should raise an error', async () => {
         const result = await checkpoint({}, () => {
           throw new Error('some unexpected error');
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         }).catch(error => error);
 
         expect(result instanceof Error).toBe(true);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(result.message).toBe('some unexpected error');
       });
     });
@@ -114,7 +141,6 @@ describe('index', () => {
       it('should raise a TryError', async () => {
         const result = await checkpoint({}, () => {
           retry('unknown');
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         }).catch(error => error);
 
         expect(result instanceof TryError).toBe(true);
