@@ -84,7 +84,10 @@ The checkpoint options are as followed:
   retries: 3, // how many retries are available before raising an error, defaults to 1
   onRetry: () => { // specify a callback before retrying
     // do things
-  }
+  },
+  onFailure: () => { // specify a callback when retry limit is reached
+    // raise custom error or whatever you want
+  },
 }
 ```
 [downloads-img]:https://img.shields.io/npm/dt/@fintoc/checkpoint
