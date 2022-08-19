@@ -10,7 +10,9 @@ describe('index', () => {
           }).catch(error => error);
 
           expect(result instanceof CheckpointError).toBe(true);
-          expect(result.message).toBe('Checkpoint failed after 1 retries');
+          expect((result as CheckpointError).message).toBe(
+            'Checkpoint failed after 1 retries'
+          );
         });
       });
 
@@ -89,7 +91,7 @@ describe('index', () => {
         }).catch(error => error);
 
         expect(result instanceof Error).toBe(true);
-        expect(result.message).toBe('some unexpected error');
+        expect((result as Error).message).toBe('some unexpected error');
       });
     });
 
@@ -159,6 +161,186 @@ describe('index', () => {
         }).catch(() => null);
 
         expect(onRetryCalled).toBe(true);
+      });
+    });
+
+    describe('return value', () => {
+      describe('when function executes correctly', () => {
+        describe('when no return value is expected', () => {
+          describe('when in an async function', () => {
+            it('should return undefined', async () => {
+              const result = await checkpoint({}, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+                return;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+
+          describe('when not in an async function', () => {
+            it('should return undefined', async () => {
+              const result = await checkpoint({}, () => {
+                return;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+        });
+
+        describe('when a return value is expected', () => {
+          describe('when in an async function', () => {
+            it('should return the value', async () => {
+              const result = await checkpoint({}, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+                return 1;
+              });
+
+              expect(result).toBe(1);
+            });
+          });
+
+          describe('when not in an async function', () => {
+            it('should return the value', async () => {
+              const result = await checkpoint({}, () => {
+                return 1;
+              });
+
+              expect(result).toBe(1);
+            });
+          });
+        });
+      });
+
+      describe('when function retries during execution', () => {
+        describe('when no return value is expected', () => {
+          describe('when in an async function', () => {
+            it('should return undefined', async () => {
+              let i = 0;
+              const result = await checkpoint({}, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+                if (i === 0) {
+                  i += 1;
+                  retry();
+                }
+
+                return;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+
+          describe('when not in an async function', () => {
+            it('should return undefined', async () => {
+              let i = 0;
+              const result = await checkpoint({}, () => {
+                if (i === 0) {
+                  i += 1;
+                  retry();
+                }
+                return;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+        });
+
+        describe('when a return value is expected', () => {
+          describe('when in an async function', () => {
+            it('should return the value', async () => {
+              let i = 0;
+              const result = await checkpoint({}, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+
+                if (i === 0) {
+                  i += 1;
+                  retry();
+                }
+
+                return 1;
+              });
+
+              expect(result).toBe(1);
+            });
+          });
+
+          describe('when in an async function', () => {
+            it('should return the value', async () => {
+              let i = 0;
+              const result = await checkpoint({}, () => {
+                if (i === 0) {
+                  i += 1;
+                  retry();
+                }
+                return 1;
+              });
+
+              expect(result).toBe(1);
+            });
+          });
+        });
+      });
+
+      describe('when function exceeds retry limit', () => {
+        describe('when no return value is expected', () => {
+          function onFailure() {
+            return;
+          }
+          describe('when in an async function', () => {
+            it('should return undefined', async () => {
+              const result = await checkpoint({ onFailure }, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+                retry();
+                return 1;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+
+          describe('when not in an async function', () => {
+            it('should return undefined', async () => {
+              const result = await checkpoint({ onFailure }, () => {
+                retry();
+                return 1;
+              });
+
+              expect(result).toBeUndefined();
+            });
+          });
+        });
+
+        describe('when a return value is expected', () => {
+          function onFailure() {
+            return 2;
+          }
+          describe('when in an async function', () => {
+            it('should return the value', async () => {
+              const result = await checkpoint({ onFailure }, async () => {
+                await new Promise(resolve => setTimeout(resolve, 1));
+
+                retry();
+                return 1;
+              });
+
+              expect(result).toBe(2);
+            });
+          });
+
+          describe('when in an async function', () => {
+            it('should return the value', async () => {
+              const result = await checkpoint({ onFailure }, () => {
+                retry();
+                return 1;
+              });
+
+              expect(result).toBe(2);
+            });
+          });
+        });
       });
     });
   });

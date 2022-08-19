@@ -90,6 +90,24 @@ The checkpoint options are as followed:
   },
 }
 ```
+
+### Return Value
+Additionally, the `checkpoint` function returns the value of the callback function passed as its parameter (if the function reaches a return value before any `retry` or exception). In the case in which the checkpoint reaches the retry limit, then the checkpoint returns the value of the `onFailure` function
+
+```ts
+function onFailure() {
+  return 'failed'
+}
+
+// returnValue might endup being 'failed' or 'success'
+const returnValue = await checkpoint({ onFailure }, () => {
+  ...
+  // it may retry at some point
+  ...
+  return 'success'
+});
+```
+
 [downloads-img]:https://img.shields.io/npm/dt/@fintoc/checkpoint
 [downloads-url]:https://www.npmtrends.com/@fintoc/checkpoint
 [npm-img]:https://img.shields.io/npm/v/@fintoc/checkpoint
